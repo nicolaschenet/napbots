@@ -26,7 +26,7 @@ LOG_FILE_PATH=my-log-file yarn auto-alloc
 ## Scheduling with cron
 ```shell
 # Launch Napbots auto allocation every 10 minutes
-*/10 * * * * /usr/local/bin/node /path/to/script/folder/index.js
+*/10 * * * * cd /path/to/script/folder && yarn update-alloc
 
 # Optionnally, clear the log once a day (or another frequency ^^)
 @daily  rm /path/to/log/file
