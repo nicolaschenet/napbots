@@ -105,7 +105,7 @@ const main = async () => {
 
   console.log('-----------------------------------------------------------');
   console.log(
-    chalk.bold(`📅  ${format(new Date(), 'EEE, yyyy/MM/dd - hh:mm:ssa')}`)
+    chalk.bold(`📅  ${format(new Date(), 'EEE, yyyy/MM/dd - hh:mm:ss a')}`)
   );
   console.log('-----------------------------------------------------------\n');
   const weather = await getCryptoWeater();
@@ -158,7 +158,7 @@ const main = async () => {
         Logger.log(
           `[${format(
             new Date(),
-            'yyyy/MM/dd - hh:mm:ssa'
+            'yyyy/MM/dd - hh:mm:ss a'
           )}] Weather: ${weather} => Updated allocation for exchange ${
             exchange.id
           }\n`
@@ -173,7 +173,7 @@ const main = async () => {
       Logger.log(
         `[${format(
           new Date(),
-          'yyyy/MM/dd - hh:mm:ssa'
+          'yyyy/MM/dd - hh:mm:ss a'
         )}] Weather: ${weather} => Nothing to udpate for exchange ${
           exchange.id
         }\n`
