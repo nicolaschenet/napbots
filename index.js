@@ -118,8 +118,11 @@ const main = async () => {
   exchanges.map(async (exchange) => {
     let toUpdate = false;
 
+    // Sometimes, Napbots make jokes like 1.5 => 1.4999999999999998
+    const exchangeLeverage = Math.round(exchange.compo.leverage * 100) / 100;
+
     // If leverage different, set to update
-    if (exchange.compo.leverage !== leverage) {
+    if (exchangeLeverage !== leverage) {
       console.log('=> Leverage is different');
       toUpdate = true;
     }
