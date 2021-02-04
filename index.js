@@ -193,6 +193,11 @@ const main = async () => {
           } => Updated allocation for exchange ${exchange.id}\n`
         );
       } catch (error) {
+        console.error(
+          `🔴  ${chalk.red.bold(
+            'Error while updating allocation!'
+          )} Stopping...\n`
+        );
         console.error(error.response ? error.response.data : error);
       }
     } else {
