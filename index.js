@@ -87,16 +87,19 @@ const getCurrentAllocations = async (token) => {
 };
 
 const assignComposition = (weather) => {
+  const { markets } = compositions;
   switch (weather) {
     case 'Extreme markets':
-      return compositions.extreme;
+      return markets.extreme;
     case 'Mild bull markets':
-      return compositions.mild_bull;
+      return markets.mild_bull;
     case 'Mild bear or range markets':
-      return compositions.mild_bear;
+      return markets.mild_bear;
     default:
-      console.error('Unknown weather condition:', weather);
-      return {};
+      console.error(
+        `🔴  ${chalk.red.bold('Unknown weather!')} ${weather}...\n`
+      );
+      return undefined;
   }
 };
 
@@ -108,9 +111,28 @@ const main = async () => {
     chalk.bold(`📅  ${format(new Date(), 'EEE, yyyy/MM/dd - hh:mm:ss a')}`)
   );
   console.log('-----------------------------------------------------------\n');
-  const weather = await getCryptoWeater();
+
+  let weather;
+  try {
+    weather = await getCryptoWeater();
+  } catch (error) {
+    console.error(
+      `🔴  ${chalk.red.bold(
+        'Unable to retrieve current crypto weather!'
+      )} Stopping...\n`
+    );
+    return;
+  }
   console.log(`🌤️  Crypto-weather is: ${chalk.yellow.bold(weather)}\n`);
-  const { leverage, compo, botOnly } = assignComposition(weather);
+  const { leverage: compoLeverage, compo, botOnly } = assignComposition(
+    weather
+  );
+
+  const { forcedLeverage } = compositions;
+  const leverage = forcedLeverage.enabled
+    ? forcedLeverage.value
+    : compoLeverage;
+
   const authToken = await getAuthToken();
   const exchanges = await getCurrentAllocations(authToken);
 
@@ -123,6 +145,10 @@ const main = async () => {
 
     // If leverage different, set to update
     if (exchangeLeverage !== leverage) {
+      // If using forced leverage, mention it
+      if (forcedLeverage.enabled) {
+        console.log('=> Using forced leverage!', forcedLeverage.value);
+      }
       console.log('=> Leverage is different');
       toUpdate = true;
     }
@@ -162,24 +188,24 @@ const main = async () => {
           `[${format(
             new Date(),
             'yyyy/MM/dd - hh:mm:ss a'
-          )}] Weather: ${weather} => Updated allocation for exchange ${
-            exchange.id
-          }\n`
+          )}] Weather: ${weather} | Forced leverage: ${
+            forcedLeverage.enabled ? 'ON' : 'OFF'
+          } => Updated allocation for exchange ${exchange.id}\n`
         );
       } catch (error) {
         console.error(error.response ? error.response.data : error);
       }
     } else {
       console.log(
-        `ℹ️  Nothing to udpate for exchange ${chalk.blue.bold(exchange.id)}`
+        `ℹ️  Nothing to update for exchange ${chalk.blue.bold(exchange.id)}`
       );
       Logger.log(
         `[${format(
           new Date(),
           'yyyy/MM/dd - hh:mm:ss a'
-        )}] Weather: ${weather} => Nothing to udpate for exchange ${
-          exchange.id
-        }\n`
+        )}] Weather: ${weather} | Forced leverage: ${
+          forcedLeverage.enabled ? 'ON' : 'OFF'
+        } => Nothing to update for exchange ${exchange.id}\n`
       );
     }
   });
